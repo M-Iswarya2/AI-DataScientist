@@ -12,7 +12,7 @@ class FeatureAnalysis:
                 numeric_features.append(index)
             else:
                 categorical_features.append(index)
-                if nunique/rows>0.75:
+                if nunique/rows>0.55:
                     high_cardinality_columns.append(index)
             column_info[index]={
                                 'dtype' : str(value),

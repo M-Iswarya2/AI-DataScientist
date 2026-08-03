@@ -1,6 +1,6 @@
 class RelationshipAnalysisAI:
     def relationship_analysis_ai(self,relationship_analysis):
-        if relationship_analysis["status"]:
+        if 'status' in relationship_analysis.keys():
             return []
         insights = []
         summary = relationship_analysis["relationship_summary"]
