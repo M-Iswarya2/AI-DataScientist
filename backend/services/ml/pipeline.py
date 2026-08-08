@@ -26,10 +26,15 @@ class Pipeline:
         results = self.evaluator.evaluate(trained_models, X_test, y_test, problem_type)
         best_model = self.model_selection.select_best_model(results, problem_type)
         return {
-            'best_model_name': best_model['best_model_name'],
-            'best_model_metrics': best_model['best_model_metrics'],
-            'score': best_model['score'],
-            "best_model": trained_models[best_model["best_model_name"]],
-            'results': results,
-            "preprocessor": self.preprocessor
-        }
+                "best_model_name": best_model["best_model_name"],
+                "best_model_metrics": best_model["best_model_metrics"],
+                "score": best_model["score"],
+                "results": results,
+                "preprocessing": {
+                    **self.preprocessor.preprocessing_info,
+                    "train_shape": list(X_train.shape),
+                    "test_shape": list(X_test.shape),
+                    "target_column": target,
+                    "problem_type": problem_type
+                }
+            }

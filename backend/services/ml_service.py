@@ -2,6 +2,7 @@ import os
 from fastapi import UploadFile
 import pandas as pd
 
+from fastapi import HTTPException
 
 from services.dataset_summary import DatasetSummary 
 from services.data_quality import DataQuality 
@@ -27,12 +28,20 @@ def save_dataset(file: UploadFile):
         buffer.write(file.file.read())
     return file_path
 
-def run_ml_pipeline(file_path):
+def run_ml_pipeline(file_path, target  = None):
     data = pd.read_csv(file_path)
     dataset_summary = ds.get_dataset_summary(data)
     data_quality = dq.get_data_quality(data)
     feature_analysis = fa.get_feature_analysis(data)
-    target_detection, target = td.target_detection(feature_analysis,data_quality['missing_values'],dataset_summary['num_rows'])
+    if target is None or target == "":
+        target_detection, target = td.target_detection(feature_analysis,data_quality['missing_values'],dataset_summary['num_rows'])
+        if target not in data.columns:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Target column '{target}' not found.")
+    else:
+        target_detection = {"target_column": target,
+                            "detection_method": "User Selected"}
     problem_type = tyd.type_detection(data, target)
     result = pipeline.run(
                         data,

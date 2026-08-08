@@ -6,9 +6,22 @@ from services.ai_insights.outlier_analysis_ai import OutlierAnalysisAI
 from services.ai_insights.type_detection_ai import TypeDetectionAI
 from services.ai_insights.target_detection_ai import TargetDetectionAI
 
+
 class AiInsights:
-    def get_ai_insights(self,dataset_summary,statistics,data_quality,feature_analysis,target_detection,best_target,relation_analysis,outlier_analysis,type_detection):
-        insights = []
+
+    def get_ai_insights(
+        self,
+        dataset_summary,
+        statistics,
+        data_quality,
+        feature_analysis,
+        target_detection,
+        best_target,
+        relation_analysis,
+        outlier_analysis,
+        type_detection
+    ):
+
         dataset_data_quality_obj = DatasetDataQuality()
         feature_analysis_obj = FeatureAnalysis()
         outlier_ai_obj = OutlierAnalysisAI()
@@ -17,11 +30,50 @@ class AiInsights:
         target_detection_ai_obj = TargetDetectionAI()
         type_detection_ai_obj = TypeDetectionAI()
 
-        insights.extend(dataset_data_quality_obj.dataset_data_quality(dataset_summary, data_quality))
-        insights.extend(feature_analysis_obj.feature(feature_analysis))
-        insights.extend(outlier_ai_obj.outlier_ai(outlier_analysis))
-        insights.extend(relationship_analysis_ai_obj.relationship_analysis_ai(relation_analysis))
-        insights.extend(statistics_ai_obj.statistics_ai(statistics))
-        insights.extend(target_detection_ai_obj.target_detection_ai(target_detection,best_target))
-        insights.extend(type_detection_ai_obj.type_detection_ai(type_detection))
-        return insights
+
+        return {
+
+            "data_quality": 
+                dataset_data_quality_obj.dataset_data_quality(
+                    dataset_summary,
+                    data_quality
+                ),
+
+
+            "feature_analysis":
+                feature_analysis_obj.feature(
+                    feature_analysis
+                ),
+
+
+            "outlier_analysis":
+                outlier_ai_obj.outlier_ai(
+                    outlier_analysis
+                ),
+
+
+            "relationship_analysis":
+                relationship_analysis_ai_obj.relationship_analysis_ai(
+                    relation_analysis
+                ),
+
+
+            "statistics":
+                statistics_ai_obj.statistics_ai(
+                    statistics
+                ),
+
+
+            "target_detection":
+                target_detection_ai_obj.target_detection_ai(
+                    target_detection,
+                    best_target
+                ),
+
+
+            "type_detection":
+                type_detection_ai_obj.type_detection_ai(
+                    type_detection
+                )
+
+        }

@@ -41,14 +41,43 @@ def analyze_dataset(file_path: str):
     outlier_analysis = oa.outlier_analysis(data)
     ai_insights = ai.get_ai_insights(dataset_summary,statistics,data_quality,feature_analysis,target_detection,best_target,relation_analysis,outlier_analysis,type_detection)
     return {
-        'dataset_summary':dataset_summary,
-        'statistics':statistics,
-        'data_quality':data_quality,
-        'feature_analysis':feature_analysis,
-        'relationship_analysis' : relation_analysis,
-        'type_detection' : type_detection,
-        'outlier_analysis':outlier_analysis,
-        'target_detection' : target_detection,
-        'ai_insights':ai_insights
-        }
+
+            'dataset_summary': dataset_summary,
+
+            'data_quality': {
+                **data_quality,
+                "ai_insights": ai_insights["data_quality"]
+            },
+
+            'statistics': {
+                **statistics,
+                "ai_insights": ai_insights["statistics"]
+            },
+
+            'feature_analysis': {
+                **feature_analysis,
+                "ai_insights": ai_insights["feature_analysis"]
+            },
+
+            'relationship_analysis': {
+                **relation_analysis,
+                "ai_insights": ai_insights["relationship_analysis"]
+            },
+
+            'type_detection': {
+                **type_detection,
+                "ai_insights": ai_insights["type_detection"]
+            },
+
+            'outlier_analysis': {
+                **outlier_analysis,
+                "ai_insights": ai_insights["outlier_analysis"]
+            },
+
+            'target_detection': {
+                **target_detection,
+                "ai_insights": ai_insights["target_detection"]
+            }
+
+}
 

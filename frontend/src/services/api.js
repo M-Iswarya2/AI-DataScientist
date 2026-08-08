@@ -9,37 +9,41 @@ export const analyzeDataset = async (file) => {
     formData.append("file", file);
 
     try {
+        const response = await api.post("/analyze", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
 
-    const response = await api.post("/analyze", formData, {
-        headers:{
-            "Content-Type":"multipart/form-data",
-        },
-    });
-
-    return response.data;
-
-}
-catch(error){
-
-    console.log("API ERROR:", error.response?.data);
-    console.log("STATUS:", error.response?.status);
-
-    throw error;
-}
-    return response.data;
+        return response.data;
+    } catch (error) {
+        console.log("API ERROR:", error.response?.data);
+        console.log("STATUS:", error.response?.status);
+        throw error;
+    }
 };
 
-export const trainModel = async (file) => {
+export const trainModel = async (file, target = "") => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await api.post("/train", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+    if (target) {
+        formData.append("target", target);
+    }
 
-    return response.data;
+    try {
+        const response = await api.post("/train", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.log("API ERROR:", error.response?.data);
+        console.log("STATUS:", error.response?.status);
+        throw error;
+    }
 };
 
 export default api;
