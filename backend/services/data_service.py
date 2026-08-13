@@ -11,6 +11,8 @@ from services.relationship_analysis import RelationshipAnalysis
 from services.type_detection import TypeDetection
 from services.outlier_analysis import OutlierAnalysis
 
+from services import current_dataset
+
 UPLOAD_DIR = "storage/uploads"
 
 ds=DatasetSummary()
@@ -26,6 +28,7 @@ oa = OutlierAnalysis()
 def save_dataset(file: UploadFile):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
     with open(file_path, "wb") as buffer:
+        current_dataset.current_path = file_path
         buffer.write(file.file.read())
     return file_path
 

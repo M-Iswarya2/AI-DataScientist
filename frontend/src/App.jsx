@@ -11,6 +11,7 @@ import TargetDetection from "./pages/TargetDetection";
 import TypeDetection from "./pages/TypeDetection";
 import Preprocessing from "./pages/Preprocessing";
 import ModelSelection from "./pages/ModelSelection";
+import Visualization from "./pages/Visualization";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/data-quality" element={<DataQuality />} />
       <Route path="/statistics" element={<Statistics />} />
       <Route path="/feature-analysis" element={<FeatureAnalysis />} />
+      <Route path="/visualization" element={<Visualization />} />
       <Route path="/relationship-analysis" element={<RelationshipAnalysis />} />
       <Route path="/outlier-analysis" element={<OutlierAnalysis />} />
       <Route path="/target-detection" element={<TargetDetection />} />

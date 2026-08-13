@@ -7,39 +7,45 @@ function ModuleCard({ title, description, path, icon }) {
         <div
             onClick={() => navigate(path)}
             className="
-                bg-white
-                rounded-xl
-                shadow-md
-                hover:shadow-xl
-                transition
-                duration-300
-                cursor-pointer
+                bg-[#12161D]
+                border border-[#232933]
+                rounded-md
                 p-6
-                border
-                hover:border-blue-500
+                cursor-pointer
+                transition
+                duration-200
+                hover:border-[#5B8DEF]
+                hover:bg-[#161B24]
             "
         >
-            <div className="text-4xl mb-4">
+            <div className="text-3xl mb-4">
                 {icon}
             </div>
 
-            <h2 className="text-xl font-bold text-gray-800">
+            <h2 className="text-xl font-semibold text-white">
                 {title}
             </h2>
 
-            <p className="text-gray-500 mt-2">
+            <p className="text-[#8B93A1] mt-2 text-sm leading-relaxed">
                 {description}
             </p>
 
             <button
+                onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(path);
+                }}
                 className="
                     mt-6
-                    bg-blue-600
+                    bg-[#5B8DEF]
                     text-white
                     px-4
                     py-2
-                    rounded-lg
-                    hover:bg-blue-700
+                    rounded-md
+                    text-sm
+                    font-medium
+                    hover:bg-[#4A7FE0]
+                    transition
                 "
             >
                 Open

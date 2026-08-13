@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 
 function Layout({ children }) {
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#0B0E12]">
 
             <Navbar />
 

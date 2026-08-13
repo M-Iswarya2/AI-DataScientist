@@ -2,6 +2,37 @@ import { useAnalysis } from "../context/AnalysisContext";
 import Layout from "../components/Layout";
 import MLUploadSection from "../components/MLUploadSection";
 
+function Panel({ title, description, children, className = "" }) {
+    return (
+        <div className={`bg-[#12161D] border border-[#232933] rounded-md p-6 ${className}`}>
+            <h2 className="text-lg font-semibold text-[#E6E8EB]">
+                {title}
+            </h2>
+            {description && (
+                <p className="text-sm text-[#5B6472] mt-1 mb-5">
+                    {description}
+                </p>
+            )}
+            <div className={description ? "" : "mt-4"}>
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function SummaryItem({ label, value }) {
+    return (
+        <div className="bg-[#161B24] border border-[#1F2530] rounded p-3 min-w-0">
+            <p className="text-xs font-mono tracking-widest text-[#5B6472] uppercase truncate">
+                {label}
+            </p>
+            <p className="text-lg font-semibold text-[#E6E8EB] mt-1 truncate">
+                {value}
+            </p>
+        </div>
+    );
+}
+
 function Preprocessing() {
 
     const { mlResult } = useAnalysis();
@@ -9,148 +40,227 @@ function Preprocessing() {
     if (!mlResult) {
         return (
             <Layout>
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-                <div className="page-container">
+                    {/* Header */}
+                    <div className="pb-6 border-b border-[#1F2530]">
+                        <p className="text-xs font-mono tracking-widest text-[#5B8DEF] uppercase mb-3">
+                            Preprocessing
+                        </p>
 
-                    <h1>Preprocessing</h1>
+                        <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">
+                            Preprocessing
+                        </h1>
 
-                    <MLUploadSection />
+                        <p className="text-[#8B93A1] mt-2 max-w-2xl text-sm sm:text-base">
+                            Overview of target detection, feature preparation, scaling, encoding, and missing-value handling.
+                        </p>
+                    </div>
 
-                    <div className="card">
-                        <p>
-                            Upload the updated dataset and train the model
-                            to view preprocessing details.
+                    <div className="mt-8">
+                        <MLUploadSection />
+                    </div>
+
+                    <div className="bg-[#12161D] border border-[#232933] rounded-md p-6 mt-6 mb-16">
+                        <p className="text-[#8B93A1] text-sm">
+                            Upload the updated dataset and train the model to view preprocessing details.
                         </p>
                     </div>
 
                 </div>
-
             </Layout>
         );
     }
 
-    const preprocessing = mlResult.preprocessing;
+    const preprocessing = mlResult.preprocessing || {};
+
+    const numericColumns = Array.isArray(preprocessing.numeric_columns)
+        ? preprocessing.numeric_columns
+        : [];
+
+    const categoricalColumns = Array.isArray(preprocessing.categorical_columns)
+        ? preprocessing.categorical_columns
+        : [];
+
+    const missingValueHandling =
+        preprocessing.missing_value_handling &&
+        typeof preprocessing.missing_value_handling === "object"
+            ? preprocessing.missing_value_handling
+            : {};
+
+    const missingValueEntries = Object.entries(missingValueHandling);
+
+    const trainShape = Array.isArray(preprocessing.train_shape)
+        ? preprocessing.train_shape.join(" × ")
+        : "-";
+
+    const testShape = Array.isArray(preprocessing.test_shape)
+        ? preprocessing.test_shape.join(" × ")
+        : "-";
 
     return (
 
         <Layout>
 
-            <div className="page-container">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-                <h1>Preprocessing</h1>
+                {/* Header */}
+                <div className="pb-6 border-b border-[#1F2530]">
+                    <p className="text-xs font-mono tracking-widest text-[#5B8DEF] uppercase mb-3">
+                        Preprocessing
+                    </p>
 
-                <MLUploadSection />
+                    <h1 className="text-3xl sm:text-4xl font-semibold text-[#E6E8EB] tracking-tight">
+                        Preprocessing
+                    </h1>
 
-                <div className="card">
-
-                    <h2>Preprocessing Summary</h2>
-
-                    <table className="data-table">
-
-                        <tbody>
-
-                            <tr>
-                                <td>Target Column</td>
-                                <td>{preprocessing.target_column}</td>
-                            </tr>
-
-                            <tr>
-                                <td>Problem Type</td>
-                                <td>{preprocessing.problem_type}</td>
-                            </tr>
-
-                            <tr>
-                                <td>Training Shape</td>
-                                <td>
-                                    {preprocessing.train_shape.join(" × ")}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Testing Shape</td>
-                                <td>
-                                    {preprocessing.test_shape.join(" × ")}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Scaling</td>
-                                <td>
-                                    {preprocessing.scaling || "None"}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Encoding</td>
-                                <td>
-                                    {preprocessing.encoding || "None"}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Numeric Columns</td>
-                                <td>
-                                    {preprocessing.numeric_columns.join(", ")}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Categorical Columns</td>
-                                <td>
-                                    {
-                                        preprocessing.categorical_columns.length
-                                            ? preprocessing.categorical_columns.join(", ")
-                                            : "None"
-                                    }
-                                </td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
+                    <p className="text-[#8B93A1] mt-2 max-w-2xl text-sm sm:text-base">
+                        Overview of target detection, feature preparation, scaling, encoding, and missing-value handling.
+                    </p>
                 </div>
 
-                <div className="card">
+                <div className="mt-8">
+                    <MLUploadSection />
+                </div>
 
-                    <h2>Missing Value Handling</h2>
+                {/* Preprocessing Summary */}
+                <div className="mt-6">
+                    <Panel title="Preprocessing Summary">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <SummaryItem
+                                label="Target Column"
+                                value={preprocessing.target_column ?? "-"}
+                            />
+                            <SummaryItem
+                                label="Problem Type"
+                                value={preprocessing.problem_type ?? "-"}
+                            />
+                            <SummaryItem
+                                label="Training Shape"
+                                value={trainShape}
+                            />
+                            <SummaryItem
+                                label="Testing Shape"
+                                value={testShape}
+                            />
+                            <SummaryItem
+                                label="Scaling"
+                                value={preprocessing.scaling || "None"}
+                            />
+                            <SummaryItem
+                                label="Encoding"
+                                value={preprocessing.encoding || "None"}
+                            />
+                        </div>
+                    </Panel>
+                </div>
 
-                    <table className="data-table">
+                {/* Feature Columns */}
+                <div className="mt-6">
+                    <Panel title="Feature Columns">
 
-                        <thead>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            <tr>
-                                <th>Column</th>
-                                <th>Method</th>
-                                <th>Value Used</th>
-                            </tr>
+                            <div>
+                                <h3 className="text-xs font-mono tracking-widest text-[#5B6472] uppercase mb-3">
+                                    Numeric Columns
+                                </h3>
 
-                        </thead>
+                                {numericColumns.length === 0 ? (
+                                    <p className="text-[#5B6472] text-sm">
+                                        None
+                                    </p>
+                                ) : (
+                                    <div className="max-h-60 overflow-y-auto pr-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            {numericColumns.map((column, index) => (
+                                                <span
+                                                    key={`${column}-${index}`}
+                                                    className="text-sm text-[#E6E8EB] bg-[#161B24] border border-[#1F2530] rounded px-3 py-1.5"
+                                                >
+                                                    {String(column)}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                        <tbody>
+                            <div>
+                                <h3 className="text-xs font-mono tracking-widest text-[#5B6472] uppercase mb-3">
+                                    Categorical Columns
+                                </h3>
 
-                            {
-                                Object.entries(
-                                    preprocessing.missing_value_handling
-                                ).map(([column, details]) => (
+                                {categoricalColumns.length === 0 ? (
+                                    <p className="text-[#5B6472] text-sm">
+                                        None
+                                    </p>
+                                ) : (
+                                    <div className="max-h-60 overflow-y-auto pr-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            {categoricalColumns.map((column, index) => (
+                                                <span
+                                                    key={`${column}-${index}`}
+                                                    className="text-sm text-[#E6E8EB] bg-[#161B24] border border-[#1F2530] rounded px-3 py-1.5"
+                                                >
+                                                    {String(column)}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                                    <tr key={column}>
+                        </div>
 
-                                        <td>{column}</td>
+                    </Panel>
+                </div>
 
-                                        <td>{details.method}</td>
-
-                                        <td>{details.value}</td>
-
-                                    </tr>
-
-                                ))
-                            }
-
-                        </tbody>
-
-                    </table>
-
+                {/* Missing Value Handling */}
+                <div className="mt-6 mb-16">
+                    <Panel
+                        title="Missing Value Handling"
+                        description="How missing values were handled during preprocessing."
+                    >
+                        {missingValueEntries.length === 0 ? (
+                            <p className="text-[#5B6472] text-sm">
+                                No missing-value handling was required.
+                            </p>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm min-w-[420px]">
+                                    <thead>
+                                        <tr className="border-b border-[#232933] text-left">
+                                            <th className="py-2 pr-4 font-mono text-xs tracking-widest text-[#5B6472] uppercase">
+                                                Column
+                                            </th>
+                                            <th className="py-2 px-4 font-mono text-xs tracking-widest text-[#5B6472] uppercase">
+                                                Method
+                                            </th>
+                                            <th className="py-2 pl-4 font-mono text-xs tracking-widest text-[#5B6472] uppercase">
+                                                Value Used
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {missingValueEntries.map(([column, details]) => (
+                                            <tr key={column} className="border-b border-[#1A1F28] last:border-0">
+                                                <td className="py-2 pr-4 text-[#E6E8EB] font-medium">
+                                                    {column}
+                                                </td>
+                                                <td className="py-2 px-4 text-[#8B93A1]">
+                                                    {details?.method ?? "-"}
+                                                </td>
+                                                <td className="py-2 pl-4 text-[#8B93A1]">
+                                                    {details?.value ?? "-"}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </Panel>
                 </div>
 
             </div>
