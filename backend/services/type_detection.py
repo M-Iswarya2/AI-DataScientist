@@ -25,8 +25,10 @@ class TypeDetection:
         if uni==2 or uni==3:
             target_type['classification_score']+=30
         uni_ratio = (uni/data.shape[0])*100
-        if uni_ratio > 50:
+        if uni_ratio >= 30:
             target_type["regression_score"]+=30
+        elif uni_ratio < 30:
+            target_type["classification_score"]+=30
 
     def predict_type(self, target_type):
         if target_type['classification_score'] > target_type["regression_score"]:
@@ -34,7 +36,7 @@ class TypeDetection:
         else:
             target_type['problem_type'] = 'Regression'
 
-    def confidence(self, target_type):
+    def confidence(self, target_type): 
         if target_type['problem_type'] == 'Classification':
             target_type['confidence'] = target_type['classification_score']/(target_type['classification_score']+target_type["regression_score"])
         else:

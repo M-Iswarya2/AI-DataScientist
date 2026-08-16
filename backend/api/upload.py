@@ -31,7 +31,8 @@ def train_model(file: UploadFile = File(...), target: Optional[str] = Form(None)
         }
 
 @router.post("/plot")
-def plot(fea1: str = Form(...), fea2: str = Form(...), plot_type: str = Form(...)):
+def plot(fea1: str = Form(None),fea2: str = Form(None),plot_type: str = Form(...)
+):
     data = pd.read_csv(current_dataset.current_path)
 
     if plot_type == "scatter":
@@ -42,6 +43,23 @@ def plot(fea1: str = Form(...), fea2: str = Form(...), plot_type: str = Form(...
         from services.plots.line import LinePlot
         line_plotter = LinePlot()
         fig = line_plotter.line_plot(data, fea1, fea2)
+    elif plot_type == "bar":
+        from services.plots.bar import Bar
+        bar_plotter = Bar()
+        fig = bar_plotter.bar_plot(data, fea1, fea2)
+    elif plot_type == "histogram":
+        from services.plots.histogram import Histogram
+        histogram_plotter = Histogram()
+        fig = histogram_plotter.histogram_plot(data, fea1)
+    elif plot_type == "box":
+        from services.plots.box import BoxPlot
+        box_plotter = BoxPlot()
+        fig = box_plotter.box_plot(data, fea1)
+    elif plot_type == "heatmap":
+        from services.plots.heatmap import Heatmap
+        heatmap_plotter = Heatmap()
+        fig = heatmap_plotter.heat_map(data)
+
     else:
         raise ValueError("Invalid plot type. Please choose either 'scatter' or 'line'.")
 

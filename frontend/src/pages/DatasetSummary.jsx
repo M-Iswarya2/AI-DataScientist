@@ -63,13 +63,10 @@ function DatasetSummary() {
                 {/* Header */}
                 <div className="pb-6 border-b border-[#1F2530]">
 
-                    <p className="text-xs font-mono tracking-widest text-[#5B8DEF] uppercase mb-3">
+                    <p className="text-2xl font-mono tracking-widest text-[#3B82F6] uppercase mb-3">
                         Dataset Summary
                     </p>
 
-                    <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">
-                        Dataset Summary
-                    </h1>
 
                     <p className="text-[#8B93A1] mt-2 max-w-2xl text-sm sm:text-base">
                         Dimensions and column overview for the uploaded dataset.
