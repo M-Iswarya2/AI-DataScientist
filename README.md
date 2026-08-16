@@ -197,6 +197,10 @@ Target Detection
       ↓
 Type Detection
       ↓
+AI Insights
+      ↓
+Visualization
+      ↓
 Preprocessing
       ↓
 Model Training
@@ -204,7 +208,3 @@ Model Training
 Model Evaluation
       ↓
 Model Selection
-      ↓
-Visualization
-      ↓
-AI Insights
