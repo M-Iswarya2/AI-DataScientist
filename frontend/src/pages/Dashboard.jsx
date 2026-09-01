@@ -9,11 +9,11 @@ function Dashboard() {
     const { setAnalysis } = useAnalysis();
     const [loading, setLoading] = useState(false);
 
-    const handleAnalyze = async (file) => {
+    const handleAnalyze = async (file, target) => {
         try {
             setLoading(true);
 
-            const result = await analyzeDataset(file);
+            const result = await analyzeDataset(file, target);
 
             console.log(result);
 
@@ -179,3 +179,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+

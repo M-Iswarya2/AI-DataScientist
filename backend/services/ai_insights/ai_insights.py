@@ -6,7 +6,6 @@ from services.ai_insights.outlier_analysis_ai import OutlierAnalysisAI
 from services.ai_insights.type_detection_ai import TypeDetectionAI
 from services.ai_insights.target_detection_ai import TargetDetectionAI
 
-
 class AiInsights:
 
     def get_ai_insights(
@@ -14,6 +13,7 @@ class AiInsights:
         dataset_summary,
         statistics,
         data_quality,
+        missing_value_anal,
         feature_analysis,
         target_detection,
         best_target,
@@ -30,13 +30,13 @@ class AiInsights:
         target_detection_ai_obj = TargetDetectionAI()
         type_detection_ai_obj = TypeDetectionAI()
 
-
         return {
 
             "data_quality": 
                 dataset_data_quality_obj.dataset_data_quality(
                     dataset_summary,
-                    data_quality
+                    data_quality,
+                    missing_value_anal
                 ),
 
 

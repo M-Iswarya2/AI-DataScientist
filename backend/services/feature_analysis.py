@@ -1,3 +1,7 @@
+from services.type_detection import TypeDetection
+
+td = TypeDetection()
+
 class FeatureAnalysis:
     def get_feature_analysis(self,data):
         rows=data.shape[0]
@@ -7,8 +11,9 @@ class FeatureAnalysis:
         high_cardinality_columns=[]
         column_info = {}
         for index,value in data.dtypes.items():
+            result = td.type_detection(data, index)
             nunique = data[index].nunique()
-            if 'float' in str(value).lower() or 'int' in str(value).lower():
+            if result['problem_type'] == 'Regression':
                 numeric_features.append(index)
             else:
                 categorical_features.append(index)

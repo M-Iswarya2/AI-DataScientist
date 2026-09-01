@@ -12,6 +12,9 @@ def clean_for_json(obj):
     if isinstance(obj, tuple):
         return [clean_for_json(value) for value in obj]
 
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+
     if isinstance(obj, (np.integer,)):
         return int(obj)
 

@@ -10,6 +10,8 @@ from services.ai_insights.ai_insights import AiInsights
 from services.relationship_analysis import RelationshipAnalysis
 from services.type_detection import TypeDetection
 from services.outlier_analysis import OutlierAnalysis
+from services.all_types import All_Types
+from services.data_quality import MissingValueAnalysis
 
 from services import current_dataset
 
@@ -24,6 +26,8 @@ ai = AiInsights()
 ra = RelationshipAnalysis()
 tyd = TypeDetection()
 oa = OutlierAnalysis()
+all_types = All_Types()
+missing_val = MissingValueAnalysis()
 
 def save_dataset(file: UploadFile):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
@@ -32,17 +36,20 @@ def save_dataset(file: UploadFile):
         buffer.write(file.file.read())
     return file_path
 
-def analyze_dataset(file_path: str):
+def analyze_dataset(file_path: str, target):
     data = pd.read_csv(file_path)
+    column_types = all_types.all_col_types(data)
     dataset_summary = ds.get_dataset_summary(data)
     statistics = s.get_statistics(data)
     data_quality = dq.get_data_quality(data)
     feature_analysis = fa.get_feature_analysis(data)
     target_detection, best_target = td.target_detection(feature_analysis,data_quality['missing_values'],dataset_summary['num_rows'])
-    relation_analysis = ra.analyze_relationship(statistics["correlation_matrix"], target=best_target)
-    type_detection = tyd.type_detection(data,target = best_target)
+    analysis_target = target if target else best_target
+    relation_analysis = ra.analyze_relationship(statistics["correlation_matrix"], target=analysis_target)
+    type_detection = tyd.type_detection(data,feature = analysis_target)
+    missing_value_analysis = missing_val.missing_value_analysis(data,data_quality["missing_values"],analysis_target,type_detection)
     outlier_analysis = oa.outlier_analysis(data)
-    ai_insights = ai.get_ai_insights(dataset_summary,statistics,data_quality,feature_analysis,target_detection,best_target,relation_analysis,outlier_analysis,type_detection)
+    ai_insights = ai.get_ai_insights(dataset_summary,statistics,data_quality,missing_value_analysis,feature_analysis,target_detection,analysis_target,relation_analysis,outlier_analysis,type_detection)
     return {
 
             'dataset_summary': dataset_summary,
@@ -80,7 +87,9 @@ def analyze_dataset(file_path: str):
             'target_detection': {
                 **target_detection,
                 "ai_insights": ai_insights["target_detection"]
-            }
+            },
+
+            'all_types' : column_types
 
 }
 

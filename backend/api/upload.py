@@ -12,9 +12,11 @@ from fastapi.responses import StreamingResponse
 router = APIRouter()
 
 @router.post("/analyze")
-def analyze_file(file: UploadFile = File(...)):
+def analyze_file(file: UploadFile = File(...), target: Optional[str] = Form(None)):
+    print("========== ANALYZE ENDPOINT HIT ==========")
+    print("TARGET RECEIVED:", target)
     path = save_dataset(file)
-    analysis = analyze_dataset(path)
+    analysis = analyze_dataset(path, target)
     return clean_for_json(analysis)
 
 
@@ -22,13 +24,13 @@ def analyze_file(file: UploadFile = File(...)):
 def train_model(file: UploadFile = File(...), target: Optional[str] = Form(None)):
     path = save_dataset(file)
     result = run_ml_pipeline(path, target=target)
-    return {
+    return clean_for_json({
             "best_model_name": result["best_model_name"],
             "metrics": result["best_model_metrics"],
             "score": result["score"],
             "results": result["results"],
             "preprocessing": result["preprocessing"]
-        }
+        })
 
 @router.post("/plot")
 def plot(fea1: str = Form(None),fea2: str = Form(None),plot_type: str = Form(...)

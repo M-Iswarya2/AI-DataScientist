@@ -1,44 +1,50 @@
 class TypeDetection:
-    def type_detection(self, data, target):
-        target_type = {
+    def type_detection(self, data, feature):
+        column_type = {
                 "problem_type":None,
                 "confidence":0,
-                "classification_score":0,
-                "regression_score":0,
+                "categorical_score":0,
+                "numerical_score":0,
                 "reasons":[]
                 }
-        self.data_type(data, target_type, target)
-        self.uni_values(data, target_type, target)
-        self.predict_type(target_type)
-        self.confidence(target_type)
-        return target_type
+        self.data_type(data, column_type, feature)
+        self.uni_values(data, column_type, feature)
+        self.fixed_names(column_type, feature)
+        self.predict_type(column_type)
+        self.confidence(column_type)
+        return column_type
 
-    def data_type(self, data, target_type, target):
-        typ = str(data[target].dtype) 
+    def data_type(self, data, column_type, feature):
+        typ = str(data[feature].dtype) 
         if typ in {'object', 'bool'}:
-            target_type['classification_score']+=100
+            column_type['categorical_score']+=100
         elif typ in {'float64', 'float32'}:
-            target_type['regression_score']+=100
+            column_type['numerical_score']+=100
 
-    def uni_values(self, data, target_type, target):
-        uni = data[target].nunique()
+    def uni_values(self, data, column_type, feature):
+        uni = data[feature].nunique()
         if uni==2 or uni==3:
-            target_type['classification_score']+=30
+            column_type['categorical_score']+=30
         uni_ratio = (uni/data.shape[0])*100
         if uni_ratio >= 30:
-            target_type["regression_score"]+=30
+            column_type["numerical_score"]+=30
         elif uni_ratio < 30:
-            target_type["classification_score"]+=30
+            column_type["categorical_score"]+=30
 
-    def predict_type(self, target_type):
-        if target_type['classification_score'] > target_type["regression_score"]:
-            target_type['problem_type'] = 'Classification'
-        else:
-            target_type['problem_type'] = 'Regression'
+    def fixed_names(self, column_type, feature):
+        fixed = ["age", "time", "year", "duration", "height", "weight", "distance", "salary", "price"]
+        if feature in fixed:
+            column_type['numerical_score']+=30
 
-    def confidence(self, target_type): 
-        if target_type['problem_type'] == 'Classification':
-            target_type['confidence'] = target_type['classification_score']/(target_type['classification_score']+target_type["regression_score"])
+    def predict_type(self, column_type):
+        if column_type['categorical_score'] > column_type["numerical_score"]:
+            column_type['problem_type'] = 'Classification'
         else:
-            target_type['confidence'] = target_type['regression_score']/(target_type['classification_score']+target_type["regression_score"])
-        target_type['confidence']=round(target_type['confidence']*100, 2)
+            column_type['problem_type'] = 'Regression'
+
+    def confidence(self, column_type): 
+        if column_type['problem_type'] == 'Classification':
+            column_type['confidence'] = column_type['categorical_score']/(column_type['categorical_score']+column_type["numerical_score"])
+        else:
+            column_type['confidence'] = column_type['numerical_score']/(column_type['categorical_score']+column_type["numerical_score"])
+        column_type['confidence']=round(column_type['confidence']*100, 2)

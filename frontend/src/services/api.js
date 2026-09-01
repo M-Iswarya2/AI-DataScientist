@@ -4,9 +4,13 @@ const api = axios.create({
     baseURL: "http://127.0.0.1:8000",
 });
 
-export const analyzeDataset = async (file) => {
+export const analyzeDataset = async (file, target = "") => {
     const formData = new FormData();
     formData.append("file", file);
+
+    if (target) {
+        formData.append("target", target);
+    }
 
     try {
         const response = await api.post("/analyze", formData, {
@@ -47,3 +51,4 @@ export const trainModel = async (file, target = "") => {
 };
 
 export default api;
+

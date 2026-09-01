@@ -34,17 +34,19 @@ class FeatureAnalysis:
                         "severity": severity
                         })
         columns = ", ".join(feature_analysis["constant_columns"])
-        insight = f"Columns {columns} contains only one unique value and provides no predictive information. Consider removing it before training."
-        insights.append({
-                            "category" : "Constant Columns",
+        if columns!="":
+            insight = f"Columns {columns} contains only one unique value and provides no predictive information. Consider removing it before training."
+            insights.append({
+                                "category" : "Constant Columns",
+                                "insight" : insight,
+                                "severity" : "high"
+                                })
+        card_columns = ",".join(feature_analysis['high_cardinality_columns'])
+        if card_columns!="":
+            insight = f"Column {card_columns} has extremely high cardinality and may not contribute meaningful predictive information. Consider removing it or using target/frequency encoding."
+            insights.append({
+                            "category" : "High Cardinality",
                             "insight" : insight,
                             "severity" : "high"
                             })
-        card_columns = ",".join(feature_analysis['high_cardinality_columns'])
-        insight = f"Column {card_columns} has extremely high cardinality and may not contribute meaningful predictive information. Consider removing it or using target/frequency encoding."
-        insights.append({
-                        "category" : "High Cardinality",
-                        "insight" : insight,
-                        "severity" : "high"
-                        })
         return insights

@@ -1,8 +1,8 @@
 class DatasetDataQuality:
-    def dataset_data_quality(self,dataset_summary,data_quality):
+    def dataset_data_quality(self,dataset_summary,data_quality,missing_value_anal):
         insights = []
         insights.extend(self.dataset_summary_insights(dataset_summary))
-        insights.extend(self.data_quality_insights(data_quality, dataset_summary))
+        insights.extend(self.data_quality_insights(data_quality, dataset_summary,missing_value_anal))
         return insights
 
     def dataset_summary_insights(self,dataset_summary):
@@ -98,47 +98,104 @@ class DatasetDataQuality:
         return insights
 
 
-    def data_quality_insights(self, data_quality, dataset_summary):
+    def data_quality_insights(self, data_quality, dataset_summary, missing_value_anal):
         insights = []
         for column, missing_count in data_quality["missing_values"].items():
             missing_percentage = (missing_count / dataset_summary['num_rows'])*100
-            if missing_percentage == 0:
-                insight = f"There are no missing value in {column}"
-                severity = 'info'
+            significant = False
+            if missing_percentage!=0:
+                if column in missing_value_anal:
+                    significant = missing_value_anal[column]['significant']
 
+            if missing_percentage == 0:
+                pass
+            
             elif missing_percentage <= 5:
-                insight = (
-                    f"The {column} has only {missing_percentage:.2f}% missing values. "
-                    "This is minimal and can usually be handled with simple imputation or by removing a few records."
-                )
-                severity = "low"
+                if significant:
+                    insight = (
+                                f"The {column} has only {missing_percentage:.2f}% missing values, "
+                                f"but the missingness is significantly associated with the target. "
+                                f"Although the amount of missing data is small, the missingness may be "
+                                f"informative and should be handled carefully."
+                                )
+                    severity = "low"
+                else:
+                    insight = (
+                                f"The {column} has only {missing_percentage:.2f}% missing values, "
+                                f"and no statistically significant association between its missingness "
+                                f"and the target was detected. This is a small amount of missing data "
+                                f"and can usually be handled with simple imputation or by removing a few records."
+                                )
+                    severity = "low"
 
             elif missing_percentage <= 20:
-                insight = (
-                    f"The {column} has {missing_percentage:.2f}% missing values. "
-                    "This may affect model performance, so appropriate imputation techniques should be applied."
-                )
-                severity = "medium"
+                if significant:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, and the "
+                        f"missingness is significantly associated with the target. This amount "
+                        f"of missing data may affect model performance, and the missingness may "
+                        f"contain useful information. Appropriate imputation techniques should "
+                        f"be applied carefully, and a missing-value indicator may also be considered."
+                    )
+                    severity = "medium"
+
+                else:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, but no "
+                        f"statistically significant association between its missingness and the "
+                        f"target was detected. This amount of missing data may affect model "
+                        f"performance, so appropriate imputation techniques should be applied."
+                    )
+                    severity = "medium"
 
             elif missing_percentage <= 50:
-                insight = (
-                    f"The {column} has {missing_percentage:.2f}% missing values. "
-                    "A significant portion of the data is missing, which may introduce bias or reduce model accuracy if not handled carefully."
-                )
-                severity = "high"
+                if significant:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, and the "
+                        f"missingness is significantly associated with the target. A substantial "
+                        f"portion of the data is missing, and this missingness may contain useful "
+                        f"information. Careful imputation is required, and a missing-value "
+                        f"indicator should be considered."
+                    )
+                    severity = "high"
 
-            else:  # missing_percentage > 50
-                insight = (
-                    f"The {column} has {missing_percentage:.2f}% missing values. "
-                    "More than half of the values are missing, making the feature potentially unreliable. Consider removing the column unless it is highly important."
-                )
-                severity = "high"
+                else:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, but no "
+                        f"statistically significant association between its missingness and the "
+                        f"target was detected. A significant portion of the data is missing, "
+                        f"which may introduce bias or reduce model accuracy if not handled carefully."
+                    )
+                    severity = "high"
 
-            insights.append({
-                            "category": "Missing Values",
-                            "insight": insight,
-                            "severity": severity
-                            })
+
+            else:
+                if significant:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, and the "
+                        f"missingness is significantly associated with the target. Although more "
+                        f"than half of the values are missing, the pattern of missingness may "
+                        f"contain important information. Consider retaining a missing-value "
+                        f"indicator or investigating the feature carefully before removing it."
+                    )
+                    severity = "high"
+
+                else:
+                    insight = (
+                        f"The {column} has {missing_percentage:.2f}% missing values, and no "
+                        f"statistically significant association between its missingness and the "
+                        f"target was detected. More than half of the values are missing, making "
+                        f"the feature potentially unreliable. Consider removing the column unless "
+                        f"it is highly important."
+                    )
+                    severity = "high"
+
+            if missing_percentage != 0:
+                insights.append({
+                                "category": "Missing Values",
+                                "insight": insight,
+                                "severity": severity
+                                })
 
         duplicate_percentage = (data_quality['duplicate_rows'] / dataset_summary['num_rows'])*100
         if duplicate_percentage == 0:
